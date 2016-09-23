@@ -2,6 +2,7 @@
 
 include_once('illustrations.php');
 include_once('notes.php');
+include_once('media.php');
 
 function plus($a, $b) {
 	return (int)$a + (int)$b;
