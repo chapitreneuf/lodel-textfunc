@@ -56,7 +56,7 @@ function media($text) {
 		}
 
 		// créer le HTML selon le type
-		$html = '</p><div id ="media_'.$identifier.'" class="media '.$media_type.'">';
+		$html = '</p><div id ="media-'.$identifier.'" class="doc-media doc-media-type-'.$media_type.'">';
 		if(!empty($info['titre'])){
 			$html .= '<div class="titreillustration">'.$info['titre'].'</div>';
 		}
