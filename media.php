@@ -31,7 +31,11 @@ function media($text) {
 			$text = str_replace($media_reference, $warning, $text);
 			continue;
 		}
-		
+
+		// effacer le <p class="texte"> qui entoure eventuellement le media
+		$reg = "@<p class=\"texte\">\s*".preg_quote($media_reference)."\s*<\/p>@";
+		$text = preg_replace($reg, $media_reference, $text);
+
 		// populate $id, $status, $class
 		extract($row); 
 		
@@ -56,7 +60,7 @@ function media($text) {
 		}
 
 		// créer le HTML selon le type
-		$html = '</p><div id ="media-'.$identifier.'" class="doc-media doc-media-type-'.$media_type.'">';
+		$html = '<div id ="media-'.$identifier.'" class="doc-media doc-media-type-'.$media_type.'">';
 		if(!empty($info['titre'])){
 			$html .= '<p class="titreillustration">'.$info['titre'].'</p>';
 		}
@@ -71,7 +75,7 @@ function media($text) {
 		if(!empty($info['urlaccesmedia'])){
 			$html .= '<p class="urlaccesmedia">'.getlodeltextcontents("Permalien","site").': <a href="'.$info['urlaccesmedia'].'">'.$info['urlaccesmedia'].'</a></p>';
 		}
-		$html .='</div><p>';
+		$html .='</div>';
 		$text = str_replace($media_reference, $html, $text);
 
 	}
