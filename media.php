@@ -69,7 +69,7 @@ function media($text) {
 			$html .= '<div class="creditsillustration">'.getlodeltextcontents("Credits","site").': '.$info['credits'].'</div>';
 		}
 		if(!empty($info['urlaccesmedia'])){
-			$html .= '<div class="urlaccesmedia">Permalien : <a href="'.$info['urlaccesmedia'].'">'.$info['urlaccesmedia'].'</a></div>';
+			$html .= '<div class="urlaccesmedia">'.getlodeltextcontents("Permalien","site").': <a href="'.$info['urlaccesmedia'].'">'.$info['urlaccesmedia'].'</a></div>';
 		}
 		$html .='</div><p>';
 		$text = str_replace($media_reference, $html, $text);
