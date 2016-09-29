@@ -63,13 +63,17 @@ function loop_search(&$context, $funcname, $args) {
 // ask qwant
 function search_qwant($q, $limit, $site) {
 	$url = 'https://api.qwant.com/egp/search/web?q=site:'.$site.'+'.$q;
-	$ret = file_get_contents($url);
-	if (!$ret)
+	$ret = curl_get($url);
+	if (!$ret) {
+		error_log("Pb avec qwant $url ." . var_export($ret, true));
 		return array();
+	}
 	
 	$json = json_decode($ret, true);
-	if (!$json || empty($json['data']['result']['items']))
+	if (!$json || empty($json['data']['result']['items'])) {
+		error_log("Pb avec qwant $url." . var_export($ret, true));
 		return array();
+	}
 
 	$results = array_slice($json['data']['result']['items'], 0, $limit);
 

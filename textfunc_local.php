@@ -92,3 +92,16 @@ function get_classes($node) {
 		return array();
 	return explode(" ", $class->nodeValue);
 }
+
+/**
+ cURL utility functions
+*/
+
+function curl_get($url, $user_agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/48.0") {
+	$curl = curl_init($url);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($curl, CURLOPT_USERAGENT, $user_agent);
+	$response = curl_exec($curl);
+
+	return $response;
+}
