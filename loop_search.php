@@ -15,7 +15,7 @@
 
 function loop_search(&$context, $funcname, $args) {
 	// mise en place des options de la boucle
-	$options = ['engine'=>'qwant', 'site'=>preg_replace('@^.*\/\/@','',$context['siteurl']), 'limit'=>10, 'q'=>''];
+	$options = ['engine'=>'qwant', 'site'=>preg_replace('@^.*\/\/@','',$context['siteurl']), 'limit'=>10, 'q'=>'', 'offset'=>0];
 	foreach ($options as $option => $value) {
 		$$option = empty($args[$option]) ? $value : $args[$option];
 	}
@@ -25,7 +25,7 @@ function loop_search(&$context, $funcname, $args) {
 
 	// appel au moteur de recherche
 	$search_func = "search_".$engine;
-	$results = $search_func($q, $limit, $site);
+	$results = $search_func($q, $limit, $offset, $site);
 
 	// pas de résultats
 	$localcontext = $context;
@@ -61,8 +61,10 @@ function loop_search(&$context, $funcname, $args) {
 }
 
 // ask qwant
-function search_qwant($q, $limit, $site) {
+function search_qwant($q, $limit, $offset, $site) {
 	$url = 'https://api.qwant.com/egp/search/web?q=site:'.$site.'+'.$q;
+	if ($offset)
+		$url .= "&offset=$offset";
 	$ret = curl_get($url);
 	if (!$ret) {
 		error_log("Pb avec qwant $url ." . var_export($ret, true));
