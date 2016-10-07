@@ -64,7 +64,7 @@ function media($text) {
 		if(!empty($info['titre'])){
 			$html .= '<p class="titreillustration">'.$info['titre'].'</p>';
 		}
-		$html .= '<div>'.$info['object'].'</div>';
+		$html .= '<div class="doc-media-contents">'.$info['object'].'</div>';
 		if(!empty($info['description']))
 			$html .= '<p class="description">'.$info['description'].'</p>';
 		if(!empty($info['legende']))
