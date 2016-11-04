@@ -105,3 +105,20 @@ function curl_get($url, $user_agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:
 
 	return $response;
 }
+
+// ajoute ou enlève un paramètre à une URL
+function query_string($url, $param, $value) {
+	parse_str(parse_url($url, PHP_URL_QUERY), $queries);
+
+	if ($value) {
+		$queries[$param] = $value;
+	} elseif (isset($queries[$param])) {
+		unset($queries[$param]);
+	}
+
+	$new_url = preg_replace('/\?.*$/', '', $url);
+	if (!empty($queries))
+		$new_url .= '?' . http_build_query($queries, '', '&amp;');
+
+	return $new_url;
+}
