@@ -14,6 +14,7 @@
 
 function illustrations($html, $width=400) {
 	$dom = text_to_dom($html);
+	remove_otx_span_bug($dom);
 	$images = find_and_group_illustrations($dom);
 	illustration_thumbnails($dom, $images, $width);
 	$images = export_illustrations_to_lodel($dom, $images);
@@ -21,6 +22,14 @@ function illustrations($html, $width=400) {
 
 // 	var_export($images);
 	return dom_to_text($dom);
+}
+
+function remove_otx_span_bug(&$dom) {
+	$spans = xpath_find($dom, '//p[@class=\'texte\']/span[img]');
+	foreach ($spans as $span) {
+		$image = $span->firstChild;
+		$span->parentNode->replaceChild($image, $span);
+	}
 }
 
 // function name is explicit enough
