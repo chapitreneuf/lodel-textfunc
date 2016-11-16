@@ -12,10 +12,10 @@
 // $html_ill = illustrations($html, 100);
 // echo $html_ill;
 
-function illustrations($html, $width=400) {
+function illustrations($html, $width=400, $surounding_class="texte") {
 	$dom = text_to_dom($html);
-	remove_otx_span_bug($dom);
-	$images = find_and_group_illustrations($dom);
+	remove_otx_span_bug($dom, $surounding_class);
+	$images = find_and_group_illustrations($dom, $surounding_class);
 	illustration_thumbnails($dom, $images, $width);
 	$images = export_illustrations_to_lodel($dom, $images);
 	C::set('images', $images);
@@ -24,8 +24,8 @@ function illustrations($html, $width=400) {
 	return dom_to_text($dom);
 }
 
-function remove_otx_span_bug(&$dom) {
-	$spans = xpath_find($dom, '//p[@class=\'texte\']/span[img]');
+function remove_otx_span_bug(&$dom, $surounding_class) {
+	$spans = xpath_find($dom, '//p[@class=\''.$surounding_class.'\']/span[img]');
 	foreach ($spans as $span) {
 		$image = $span->firstChild;
 		$span->parentNode->replaceChild($image, $span);
@@ -33,8 +33,8 @@ function remove_otx_span_bug(&$dom) {
 }
 
 // function name is explicit enough
-function find_and_group_illustrations(&$dom) {
-	$images_nodes = xpath_find($dom, '//p[@class=\'texte\' and img]');
+function find_and_group_illustrations(&$dom, $surounding_class) {
+	$images_nodes = xpath_find($dom, '//p[@class=\''.$surounding_class.'\' and img]');
 
 	// find all elements that belong to the image
 	$images = array();
@@ -44,7 +44,7 @@ function find_and_group_illustrations(&$dom) {
 		$image->attributes->getNamedItem('class')->nodeValue = 'imageillustration';
 		foreach ([['previous','titre'], ['next','legende'], ['next','credit']] as $search) {
 			list($direction, $class_name) = $search;
-			$found = find_Sibling($direction, $image, 'p', $class_name.'illustration', 'texte');
+			$found = find_Sibling($direction, $image, 'p', $class_name.'illustration', $surounding_class);
 			if ($found) {
 				$images[$nb_img][$class_name] = $found;
 			}
