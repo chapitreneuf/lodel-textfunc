@@ -2,8 +2,9 @@
 
 /** filtre illustrations pour lodel
 
- Utilisation : [#TEXTE|illustrations(200)]
+ Utilisation : [#TEXTE|illustrations(200, 'nom_de_la_section')]
  Il remplit un tableau #IMAGES utilisable pour la table des illustrations
+ exemple : #IMAGES['titre', 'image', 'legende', 'credit', 'section'] chaque éléments contient le HTML, la partie 'section' contient le nom de la section passée en paramètre du filtre
 
 */
 
@@ -15,9 +16,16 @@
 function illustrations($html, $width=400, $surounding_class="texte") {
 	$dom = text_to_dom($html);
 	remove_otx_span_bug($dom, $surounding_class);
-	$images = find_and_group_illustrations($dom, $surounding_class);
-	illustration_thumbnails($dom, $images, $width);
-	$images = export_illustrations_to_lodel($dom, $images);
+
+	$images = C::get('images');
+	if (empty($images))
+		$images = array();
+
+	// $dom et $image sont passés par référence, les fonctions modifient le HTML et le tableau des illustrations #IMAGES
+	$start_offset = count($images);
+	find_and_group_illustrations($dom, $images, $start_offset, $surounding_class);
+	illustration_thumbnails($dom, $images, $start_offset, $width);
+	export_illustrations_to_lodel($dom, $images, $start_offset, $surounding_class);
 	C::set('images', $images);
 
 // 	var_export($images);
@@ -33,12 +41,11 @@ function remove_otx_span_bug(&$dom, $surounding_class) {
 }
 
 // function name is explicit enough
-function find_and_group_illustrations(&$dom, $surounding_class) {
+function find_and_group_illustrations(&$dom, &$images, $start_offset, $surounding_class) {
 	$images_nodes = xpath_find($dom, '//p[@class=\''.$surounding_class.'\' and img]');
 
 	// find all elements that belong to the image
-	$images = array();
-	$nb_img = 0;
+	$nb_img = $start_offset;
 	foreach ($images_nodes as $image) {
 		$images[$nb_img]['image'] = $image;
 		$image->attributes->getNamedItem('class')->nodeValue = 'imageillustration';
@@ -51,10 +58,11 @@ function find_and_group_illustrations(&$dom, $surounding_class) {
 		}
 		$nb_img +=1;
 	}
-	
+
 	// create container and put illustrations elements in in
-	foreach ($images as $index => $image) {
-		$container = create_element($dom, 'div', [['id','illustration-'.($index+1)], ['class','groupe-illustration']]);
+	for ($index=$start_offset; $index<$nb_img; $index++) {
+		$image = &$images[$index];
+		$container = create_element($dom, 'div', [['id','illustration-'.($index+1)], ['class','groupe-illustration groupe-illustration-'.$surounding_class]]);
 		// put container just before img tag
 		$container = $image['image']->parentNode->insertBefore($container, $image['image']);
 		foreach(['titre', 'image', 'legende', 'credit'] as $to_move) {
@@ -66,12 +74,13 @@ function find_and_group_illustrations(&$dom, $surounding_class) {
 		}
 	}
 
-	return $images;
 }
 
 // do thumbnail of illustrations
-function illustration_thumbnails(&$dom, &$images, $width) {
-	foreach ($images as &$image) {
+function illustration_thumbnails(&$dom, &$images, $start_offset, $width) {
+	$nb_img = count($images);
+	for ($index=$start_offset; $index<$nb_img; $index++) {
+		$image = &$images[$index];
 		$img = $image['image']->firstChild;
 		$src = $img->attributes->getNamedItem('src')->nodeValue;
 // 		$thumb_src = $src.'.thumb'; // uncomment next line in lodel
@@ -86,15 +95,17 @@ function illustration_thumbnails(&$dom, &$images, $width) {
 	}
 }
 
-function export_illustrations_to_lodel(&$dom, $images) {
-	foreach ($images as &$image) {
+function export_illustrations_to_lodel(&$dom, &$images, $start_offset, $surounding_class) {
+	$nb_img = count($images);
+	for ($index=$start_offset; $index<$nb_img; $index++) {
+		$image = &$images[$index];
 		foreach(['titre', 'image', 'legende', 'credit'] as $export) {
 			if (isset($image[$export])) {
 				$image[$export] = $dom->saveXML($image[$export]);
 			}
 		}
+		$image['section'] = $surounding_class;
 	}
-	return $images;
 }
 
 // find the sibling of $node using $nodeName and $class_name
