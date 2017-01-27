@@ -29,6 +29,11 @@ function repliquer($texte, $nb) {
 	return $res;
 }
 
+function lang_is_rtl($lang) {
+	$rtl_languages = array('ar' /* 'العربية', Arabic */, 'arc' /* Aramaic */, 'bcc' /* 'بلوچی مکرانی', Southern Balochi */, 'bqi' /* 'بختياري', Bakthiari */, 'ckb' /* 'Soranî / کوردی', Sorani */, 'dv' /* Dhivehi */, 'fa' /* 'فارسی', Persian */, 'glk' /* 'گیلکی', Gilaki */, 'he' /* 'עברית', Hebrew */, 'ku' /* 'Kurdî / كوردی', Kurdish */, 'mzn' /* 'مازِرونی', Mazanderani */, 'pnb' /* 'پنجابی', Western Punjabi */, 'ps' /* 'پښتو', Pashto, */, 'sd' /* 'سنڌي', Sindhi */, 'ug' /* 'Uyghurche / ئۇيغۇرچە', Uyghur */, 'ur' /* 'اردو', Urdu */, 'yi' /* 'ייִדיש', Yiddish */);
+	return in_array($lang, $rtl_languages);
+}
+
 /**
  DOM utility functions
 */
