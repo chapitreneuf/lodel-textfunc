@@ -34,6 +34,13 @@ function lang_is_rtl($lang) {
 	return in_array($lang, $rtl_languages);
 }
 
+function text_is_rtl($text) {
+	// regex de http://stackoverflow.com/questions/12006095/javascript-how-to-check-if-character-is-rtl
+	$rtl_unicode = '/[\x{0591}-\x{07FF}\x{200F}\x{202B}\x{202E}\x{FB1D}-\x{FDFD}\x{FE70}-\x{FEFC}]/u';
+	$count = preg_match_all($rtl_unicode, mb_substr(strip_tags($text),0,20));
+	return $count;
+}
+
 /**
  DOM utility functions
 */
