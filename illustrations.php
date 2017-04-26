@@ -15,7 +15,7 @@
 
 function illustrations($html, $width=400, $surounding_class="texte") {
 	$dom = text_to_dom($html);
-	remove_otx_span_bug($dom, $surounding_class);
+	remove_embedded_img($dom, $surounding_class);
 
 	$images = C::get('images');
 	if (empty($images))
@@ -32,11 +32,17 @@ function illustrations($html, $width=400, $surounding_class="texte") {
 	return dom_to_text($dom);
 }
 
-function remove_otx_span_bug(&$dom, $surounding_class) {
-	$spans = xpath_find($dom, '//p[@class=\''.$surounding_class.'\']/span[img]');
-	foreach ($spans as $span) {
-		$image = $span->firstChild;
-		$span->parentNode->replaceChild($image, $span);
+// destroy parents of <img> that are not p[@texte]
+function remove_embedded_img(&$dom, $surounding_class) {
+	$paragraphes = xpath_find($dom, '//p[@class=\''.$surounding_class.'\']');
+	foreach ($paragraphes as $paragraphe) {
+		$images = $paragraphe->getElementsByTagName('img');
+		foreach ($images as $image) {
+			while ($image->parentNode->tagName != 'p') {
+				$parent = $image->parentNode;
+				$parent->parentNode->replaceChild($image, $parent);
+			}
+		}
 	}
 }
 
