@@ -54,9 +54,10 @@ function gettext_from_node($dom_node) {
 
 // remove empty tags inside a DOM node
 function remove_empty_tags($dom_node) {
-	$empty_tags = xpath_find($dom_node->ownerDocument, '//*[not(*) and not(text()[normalize-space()])]', $dom_node);
-	foreach($empty_tags as $node) {
-		$node->parentNode->removeChild($node);
+	while (($empty_tags = xpath_find($dom_node->ownerDocument, '//*[not(*) and not(text()[normalize-space()])]', $dom_node)) && $empty_tags->length>0) {
+		foreach($empty_tags as $node) {
+			$node->parentNode->removeChild($node);
+		}
 	}
 }
 
