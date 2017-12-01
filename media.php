@@ -62,18 +62,18 @@ function media($text) {
 		// créer le HTML selon le type
 		$html = '<div id ="media-'.$identifier.'" class="doc-media doc-media-type-'.$media_type.'">';
 		if(!empty($info['titre'])){
-			$html .= '<p class="titreillustration">'.$info['titre'].'</p>';
+			$html .= '<p class="titre-media">'.$info['titre'].'</p>';
 		}
 		$html .= '<div class="doc-media-contents">'.$info['object'].'</div>';
 		if(!empty($info['description']))
-			$html .= '<div class="descriptionillustration">'.$info['description'].'</div>';
+			$html .= '<div class="description-media">'.$info['description'].'</div>';
 		if(!empty($info['legende']))
-			$html .= '<div class="legendeillustration">'.$info['legende'].'</div>';
+			$html .= '<div class="legende-media">'.$info['legende'].'</div>';
 		if(!empty($info['credits'])){
-			$html .= '<p class="creditsillustration">'.getlodeltextcontents("Credits","site").': '.$info['credits'].'</p>';
+			$html .= '<p class="credits-media">'.getlodeltextcontents("Credits","site").': '.$info['credits'].'</p>';
 		}
 		if(!empty($info['urlaccesmedia'])){
-			$html .= '<p class="urlaccesmedia">'.getlodeltextcontents("Permalien","site").': <a href="'.$info['urlaccesmedia'].'">'.$info['urlaccesmedia'].'</a></p>';
+			$html .= '<p class="urlaccesmedia-media">'.getlodeltextcontents("Permalien","site").': <a href="'.$info['urlaccesmedia'].'">'.$info['urlaccesmedia'].'</a></p>';
 		}
 		$html .='</div>';
 		$text = str_replace($media_reference, $html, $text);
