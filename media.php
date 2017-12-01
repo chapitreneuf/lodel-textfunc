@@ -66,9 +66,9 @@ function media($text) {
 		}
 		$html .= '<div class="doc-media-contents">'.$info['object'].'</div>';
 		if(!empty($info['description']))
-			$html .= '<p class="description">'.$info['description'].'</p>';
+			$html .= '<div class="descriptionillustration">'.$info['description'].'</div>';
 		if(!empty($info['legende']))
-			$html .= '<p class="legendeillustration">'.$info['legende'].'</p>';
+			$html .= '<div class="legendeillustration">'.$info['legende'].'</div>';
 		if(!empty($info['credits'])){
 			$html .= '<p class="creditsillustration">'.getlodeltextcontents("Credits","site").': '.$info['credits'].'</p>';
 		}
