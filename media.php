@@ -14,7 +14,7 @@
 function media($text) {
 	global $db;
 
-	$reg = '#\[(image|son|sound|video|animation):([^\]]*?)\]#';
+	$reg = '#\[(image|son|sound|video|animation|pdf):([^\]]*?)\]#';
 	preg_match_all($reg, $text, $matches, PREG_SET_ORDER);
 
 	foreach ($matches as $medium) {
@@ -55,7 +55,7 @@ function media($text) {
 		
 		// Si class fichiers: créer la balise object qui convient
 		if ($class == 'fichiers') {
-			$info['object'] = media_create_object($info['document'], $media_type);
+			$info['object'] = media_create_object($info['document'], $media_type, $id);
 			$info['urlaccesmedia'] = "";
 		}
 
@@ -84,10 +84,14 @@ function media($text) {
 }
 
 
-function media_create_object($url, $media_type) {
+function media_create_object($url, $media_type, $id) {
 	switch($media_type) {
 		case "image":
 			$object = "<img src='$url' />";
+			break;
+		case "pdf":
+			$url = urlencode('../../../../../../' . makeurlwithfile($id));
+			$object = "<iframe src='tpl/node_modules/pdfjs-dist-viewer-min/build/minified/web/viewer.html?file=$url'></iframe>";
 			break;
 		default:
 			$object = "<img src='$url' />";
