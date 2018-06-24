@@ -90,8 +90,10 @@ function media_create_object($url, $media_type, $id) {
 			$object = "<img src='$url' />";
 			break;
 		case "pdf":
-			$url = urlencode('../../../../../../' . makeurlwithfile($id));
+			global $context;
+			$url = urlencode($context['siteurl'] . '/' . makeurlwithfile($id));
 			$object = "<iframe src='tpl/node_modules/pdfjs-dist-viewer-min/build/minified/web/viewer.html?file=$url'></iframe>";
+			$object .= "<a class='media-pdf-download' href='".makeurlwithfile($id)."' target='_blank'>".getlodeltextcontents("TELECHARGER_PDF_EMBED","site")."</a>";
 			break;
 		default:
 			$object = "<img src='$url' />";
