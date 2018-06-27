@@ -30,10 +30,14 @@ function cutnotes($html, $max_length=100, $ellipsis='…') {
 
 function change_note_link($note) {
 	$a = xpath_find($note->ownerDocument, './/a[@class=\'FootnoteSymbol\']', $note)[0];
-	$id = $a->attributes->getNamedItem('id')->nodeValue;
-	$new_href = '#' . $id;
-	$a->attributes->getNamedItem('id')->nodeValue = 'cutted-' . $id;
-	$a->attributes->getNamedItem('href')->nodeValue = $new_href;
+	if ($a) {
+		$id = $a->attributes->getNamedItem('id')->nodeValue;
+		$new_href = '#' . $id;
+		$a->attributes->getNamedItem('id')->nodeValue = 'cutted-' . $id;
+		$a->attributes->getNamedItem('href')->nodeValue = $new_href;
+	} else {
+		$new_href = 'notes_not_found';
+	}
 	return $new_href;
 }
 
