@@ -13,7 +13,7 @@
 
 */
 
-function loop_search(&$context, $funcname, $args) {
+function loop_websearch(&$context, $funcname, $args) {
 	// mise en place des options de la boucle
 	$options = ['engine'=>'qwant', 'site'=>'', 'limit'=>10, 'q'=>'', 'offset'=>0];
 	$options['site'] = !empty($context['options']['metadonneessite']['urldusite']) ? $context['options']['metadonneessite']['urldusite'] : $context['siteurl'];
