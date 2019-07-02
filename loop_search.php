@@ -21,6 +21,7 @@ function loop_websearch(&$context, $funcname, $args) {
 	foreach ($options as $option => $value) {
 		$$option = empty($args[$option]) ? $value : $args[$option];
 	}
+
 	if (intval($limit) < 1)
 		$limit = $options['limit'];
 	$q = urlencode($q);
@@ -31,13 +32,14 @@ function loop_websearch(&$context, $funcname, $args) {
 
 	// pas de résultats
 	$localcontext = $context;
-	if (empty($results)) {
+
+	if (empty($results['items'])) {
 		if (function_exists("code_alter_$funcname"))
 			call_user_func("code_alter_$funcname", $localcontext);
 		return;
 	}
 
-	$total = count($results);
+	$total = $results['total'];
 	$localcontext['total'] = $total;
 
 	// code avant
@@ -45,7 +47,7 @@ function loop_websearch(&$context, $funcname, $args) {
 		call_user_func("code_before_$funcname", $localcontext);
 
 	$count = 0;
-	foreach ($results as $result) {
+	foreach ($results['items'] as $result) {
 		$localcontext['count'] = ++$count;
 		$docontext = array_merge($localcontext, $result);
 
@@ -63,23 +65,38 @@ function loop_websearch(&$context, $funcname, $args) {
 }
 
 // ask qwant
+// Output:
+// [
+//		'total' => int,
+//		'items' => [ [ 'title','url','favicon','source','desc','_id','position'], … ]
+// ]
 function search_qwant($q, $limit, $offset, $site) {
-	$url = 'https://api.qwant.com/egp/search/web?q=site:'.$site.'+'.$q;
+	// URL de l'API + la recherche
+	$url = 'https://api.qwant.com/api/search/web?q=site:'.$site.'+'.$q;
+
+	// ajout des paramètres (non docummentés) pour qwant
+	$url .= "&count=$limit&t=web&extensionDisabled=true&safesearch=1&locale=fr_FR&uiv=4";
+
+	// ajout de la pagination
 	if ($offset)
 		$url .= "&offset=$offset";
+
+	// chargment de la réponse
 	$ret = curl_get($url);
 	if (!$ret) {
 		error_log("Pb avec qwant $url ." . var_export($ret, true));
 		return array();
 	}
 	
+	// on décode, test
 	$json = json_decode($ret, true);
-	if (!$json || empty($json['data']['result']['items'])) {
+	if (!$json || empty($json['data']['result'])) {
 		error_log("Pb avec qwant $url." . var_export($ret, true));
-		return array();
+		return array('total'=>0,'items'=>[]);
 	}
 
-	$results = array_slice($json['data']['result']['items'], 0, $limit);
+	$results = $json['data']['result'];
+	unset($results['filters']);
 
 	return $results;
 }
