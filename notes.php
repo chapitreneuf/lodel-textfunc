@@ -14,6 +14,9 @@
 // echo $html_notes;
 
 function cutnotes($html, $max_length=100, $ellipsis='…') {
+	if (!$html) {
+		return '';
+	}
 	$dom = text_to_dom($html);
 
 	$notes_nodes = xpath_find($dom, '//p[@class=\'notesbaspage\']');
