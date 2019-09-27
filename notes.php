@@ -103,7 +103,7 @@ function cuttext_from_node_recurs($node, $max_length, $current_length = 0) {
 		$current_length = cuttext_from_node_recurs($node, $max_length, $current_length);
 	}
 
-	while($node->nextSibling != null) {
+	while($node && $node->nextSibling != null) {
 		$current_length = cuttext_from_node_recurs($node->nextSibling, $max_length, $current_length);
 		$node = $node->nextSibling;
 	}
