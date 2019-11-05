@@ -4,7 +4,7 @@ include_once('illustrations.php');
 include_once('notes.php');
 include_once('media.php');
 include_once('loop_search.php');
-include_once('../lodel/lodel/scripts/searchfunc.php');
+include_once('../lodel/scripts/searchfunc.php');
 
 function plus($a, $b) {
 	return (int)$a + (int)$b;
