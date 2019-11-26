@@ -19,9 +19,12 @@ function cutnotes($html, $max_length=100, $ellipsis='…') {
 	}
 	$dom = text_to_dom($html);
 
-	$notes_nodes = xpath_find($dom, '//p[@class=\'notesbaspage\']');
-	foreach ($notes_nodes as $note) {
-// 		echo $dom->saveXML($note)."\n";
+	// Notes should be in p.notesbaspage, but not always, so we use childNodes instead
+	// $notes_nodes = xpath_find($dom, '//p[@class=\'notesbaspage\']');
+
+	// Get body and loop on children, they are the notes
+	$body = $dom->getElementsByTagName('body')[0];
+	foreach ($body->childNodes as $note) {
 		$href = change_note_link($note);
 		cuttext_from_node($note, $max_length, $ellipsis, $href);
 // 		echo $dom->saveXML($note)."\n";
