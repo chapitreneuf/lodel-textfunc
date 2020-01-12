@@ -87,7 +87,14 @@ function illustration_thumbnails(&$dom, &$images, $start_offset, $width) {
 	$nb_img = count($images);
 	for ($index=$start_offset; $index<$nb_img; $index++) {
 		$image = &$images[$index];
-		$img = $image['image']->firstChild;
+
+        // find the IMG tag
+        // It should be firstChild, unless document is not well formed
+        // so use getElementsByTagName to be sure
+		$img = $image['image']->getElementsByTagName('img');
+		if (!$img || !$img->length) next;
+		$img = $img[0];
+
 		$src = $img->attributes->getNamedItem('src')->nodeValue;
 // 		$thumb_src = $src.'.thumb'; // uncomment next line in lodel
 		$thumb_src = vignette($src, $width);
