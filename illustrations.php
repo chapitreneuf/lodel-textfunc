@@ -92,7 +92,7 @@ function illustration_thumbnails(&$dom, &$images, $start_offset, $width) {
         // It should be firstChild, unless document is not well formed
         // so use getElementsByTagName to be sure
 		$img = $image['image']->getElementsByTagName('img');
-		if (!$img || !$img->length) next;
+		if (!$img || !$img->length) continue;
 		$img = $img[0];
 
 		$src = $img->attributes->getNamedItem('src')->nodeValue;
