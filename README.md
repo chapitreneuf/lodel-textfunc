@@ -1,3 +1,11 @@
 A collection of text filter and helper function for Lodel.
 
-Add `include_once('/var/www/dev/lodel-textfunc/textfunc_local.php');` in your `lodelconfig.php`
+Install lodel-textfunc/ folder in the same folder of the main lodel installation:
+
+```
+  /var/www/html/ ┌ lodel/
+                 ├─      lodelconfig.php
+                 ├ lodel-textfunc/
+```
+
+Add `include_once('../lodel-textfunc/textfunc_local.php');` in your `lodelconfig.php`
