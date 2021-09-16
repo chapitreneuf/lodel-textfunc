@@ -6,7 +6,7 @@
 
 if (!function_exists('vignettiser')) {
 	function vignettiser($text, $width, $height) {
-		return illustrations($text, $width, $height);
+		return illustrations($text, $width);
 	}
 }
 
