@@ -140,24 +140,18 @@ function query_string($url, $param, $value) {
 	return $new_url;
 }
 
-// Traitement des tableaux
+// Filtre tableaux: ajout d'un attribut title aux tableaux
 function tableaux($html) {
-	// transformer les titreillustration des tableaux en éléments <caption> dans le tableau
 	$dom = text_to_dom($html);
 	$tables = xpath_find($dom, '//table');
 	foreach ($tables as $table) {
 		$preceding = $table->previousSibling;
 		$classname = $preceding->getAttribute('class');
-		if ($classname !== 'titreillustration') {
+		$title = $preceding->textContent;
+		if ($classname !== 'titreillustration' or $title == '') {
 			continue;
 		}
-
-		$caption = $dom->createDocumentFragment();
-		$caption->appendXML('<caption class="titreillustration titreillustration--table">' . $preceding->textContent . '</caption>');
-		$first_child = $table->childNodes->item(0);
-		$table->insertBefore($caption, $first_child);
-		$preceding = $preceding->parentNode->removeChild($preceding);
+		$table->setAttribute('title', $title);
 	}
-
 	return dom_to_text($dom);
 }
