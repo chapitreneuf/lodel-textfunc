@@ -132,7 +132,7 @@ function add_ellipsis($note, $ellipsis, $href) {
 
 function arianotecalls($text) {
 	$dom = text_to_dom($text);
-	
+
 	$notecalls = xpath_find($dom, '//a[@class=\'footnotecall\' or @class=\'endnotecall\']');
 	foreach ($notecalls as $notecall) {
 		$href = $notecall->attributes->getNamedItem('href')->nodeValue;
@@ -152,10 +152,16 @@ function arianotes($html) {
 	// Get body and loop on children, they are the notes (merci Arnaud ^^)
 	$body = $dom->getElementsByTagName('body')[0];
 	foreach ($body->childNodes as $note) {
+		// move id on parent element
 		$a = xpath_find($note->ownerDocument, './/a[@class=\'FootnoteSymbol\']', $note)[0];
 		$id = $a->attributes->getNamedItem('id')->nodeValue;
 		$note->setAttribute('id', $id);
 		$a->removeAttribute('id');
+
+		// add aria-label on .FootnoteSymbol
+		$index = preg_replace('/[^0-9]/', '', $id);
+		$label = getlodeltextcontents("note_numero", "site") . ' ' . $index;
+		$a->setAttribute('aria-label', $label);
 	}
 
 	return dom_to_text($dom);
