@@ -27,7 +27,7 @@ function media($text) {
 
 		// Le media n'est pas trouvé dans la base
 		if (empty($row)) {
-			$warning = '<div style="background-color:red;">'.getlodeltextcontents("A media was expected","site").' : '.$media_reference.'</div>';
+			$warning = '<div style="background-color:red;">'.getlodeltextcontents("media_expected","site").' : '.$media_reference.'</div>';
 			$text = str_replace($media_reference, $warning, $text);
 			continue;
 		}
