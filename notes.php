@@ -117,3 +117,46 @@ function add_ellipsis($note, $ellipsis, $href) {
 	$a = create_element($note->ownerDocument, 'a', [['href', $href], ['class', 'ellipsis']], $ellipsis);
 	$note->appendChild($a);
 }
+
+/** filtres arianotecalls et arianotes pour Lodel (à utiliser ensemble)
+
+ arianotecalls
+ Ajoute un attribut aria-labelledby aux appels de notes d'un texte.
+ Utilisation : [#TEXTE|arianotecalls]
+
+ arianotes
+ Dans les notes, déplace l'id de la note sur l'élément <p> parent et ajoute un attribut aria-label aux appels de notes.
+ Utilisation : [#NOTESBASPAGE|arianotes]
+
+*/
+
+function arianotecalls($text) {
+	$dom = text_to_dom($text);
+	
+	$notecalls = xpath_find($dom, '//a[@class=\'footnotecall\' or @class=\'endnotecall\']');
+	foreach ($notecalls as $notecall) {
+		$href = $notecall->attributes->getNamedItem('href')->nodeValue;
+		$note_id = str_replace('#', '', $href);
+		$notecall->setAttribute('aria-labelledby', $note_id);
+	}
+
+	return dom_to_text($dom);
+}
+
+function arianotes($html) {
+	if (!$html) {
+		return '';
+	}
+	$dom = text_to_dom($html);
+
+	// Get body and loop on children, they are the notes (merci Arnaud ^^)
+	$body = $dom->getElementsByTagName('body')[0];
+	foreach ($body->childNodes as $note) {
+		$a = xpath_find($note->ownerDocument, './/a[@class=\'FootnoteSymbol\']', $note)[0];
+		$id = $a->attributes->getNamedItem('id')->nodeValue;
+		$note->setAttribute('id', $id);
+		$a->removeAttribute('id');
+	}
+
+	return dom_to_text($dom);
+}
