@@ -3,6 +3,7 @@
 include_once('illustrations.php');
 include_once('notes.php');
 include_once('media.php');
+include_once('tableaux.php');
 include_once('loop_search.php');
 include_once('../lodel/scripts/searchfunc.php');
 include_once('alias.php');
@@ -138,20 +139,4 @@ function query_string($url, $param, $value) {
 		$new_url .= '?' . http_build_query($queries, '', '&amp;');
 
 	return $new_url;
-}
-
-// Filtre tableaux: ajout d'un attribut title aux tableaux
-function tableaux($html) {
-	$dom = text_to_dom($html);
-	$tables = xpath_find($dom, '//table');
-	foreach ($tables as $table) {
-		$preceding = $table->previousSibling;
-		$classname = $preceding->getAttribute('class');
-		$title = $preceding->textContent;
-		if ($classname !== 'titreillustration' or $title == '') {
-			continue;
-		}
-		$table->setAttribute('title', $title);
-	}
-	return dom_to_text($dom);
 }
