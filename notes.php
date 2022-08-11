@@ -125,8 +125,8 @@ function add_ellipsis($note, $ellipsis, $href) {
  Utilisation : [#TEXTE|arianotecalls]
 
  arianotes
- Dans les notes, déplace l'id de la note sur l'élément <p> parent et ajoute un attribut aria-label aux appels de notes.
- Utilisation : [#NOTESBASPAGE|arianotes]
+ Dans les notes, déplace l'id de la note sur l'élément <p> parent et ajoute un attribut aria-label aux appels de notes. L'argument ajoute à la fin de la note un lien de retour vers le texte si true.
+ Utilisation : [#NOTESBASPAGE|arianotes(true)]
 
 */
 
@@ -143,7 +143,7 @@ function arianotecalls($text) {
 	return dom_to_text($dom);
 }
 
-function arianotes($html) {
+function arianotes($html, $add_return_link = false) {
 	if (!$html) {
 		return '';
 	}
@@ -162,6 +162,14 @@ function arianotes($html) {
 		$index = preg_replace('/[^0-9]/', '', $id);
 		$label = getlodeltextcontents("note_numero", "site") . ' ' . $index;
 		$a->setAttribute('aria-label', $label);
+
+		if ($add_return_link) {
+			// add "return to text" link
+			$href = $a->attributes->getNamedItem('href')->nodeValue;
+			$return_link = $dom->createDocumentFragment();
+			$return_link->appendXML(' <a href="' . $href . '" class="note-return-link">' . getlodeltextcontents("note_retour", "site") . '</a>');
+			$note->appendChild($return_link);
+		}
 	}
 
 	return dom_to_text($dom);
