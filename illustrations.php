@@ -68,7 +68,7 @@ function find_and_group_illustrations(&$dom, &$images, $start_offset, $suroundin
 	// create container and put illustrations elements in in
 	for ($index=$start_offset; $index<$nb_img; $index++) {
 		$image = &$images[$index];
-		$container = create_element($dom, 'div', [['id','illustration-'.($index+1)], ['class','groupe-illustration groupe-illustration-'.$surounding_class]]);
+		$container = create_element($dom, 'figure', [['id','illustration-'.($index+1)], ['class','groupe-illustration groupe-illustration-'.$surounding_class]]);
 		// put container just before img tag
 		$container = $image['image']->parentNode->insertBefore($container, $image['image']);
 		$alt_text = '';
@@ -80,7 +80,18 @@ function find_and_group_illustrations(&$dom, &$images, $start_offset, $suroundin
 				}
 				// remove node and put it in container
 				$old_node = $image[$to_move]->parentNode->removeChild($image[$to_move]);
-				$images[$index][$to_move] = $container->appendChild($old_node);
+				$container->appendChild($old_node);
+				$images[$index][$to_move] = $old_node->cloneNode(true);
+
+				// wrap p.legendeillustration in a <figcaption> element
+				if ($to_move == 'legende') {
+					$figcaption = $dom->createElement('figcaption');
+					$inner_html = $old_node->ownerDocument->saveHTML($old_node);
+					$fragment = $figcaption->ownerDocument->createDocumentFragment();
+					$fragment->appendXML($inner_html);
+					$figcaption->appendChild($fragment);
+					$old_node->parentNode->replaceChild($figcaption, $old_node);
+				}
 			}
 		}
 		// set alt text
