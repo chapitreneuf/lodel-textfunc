@@ -86,7 +86,7 @@ function find_and_group_illustrations(&$dom, &$images, $start_offset, $suroundin
 				// wrap p.legendeillustration in a <figcaption> element
 				if ($to_move == 'legende') {
 					$figcaption = $dom->createElement('figcaption');
-					$inner_html = $old_node->ownerDocument->saveHTML($old_node);
+					$inner_html = $old_node->ownerDocument->saveXML($old_node);
 					$fragment = $figcaption->ownerDocument->createDocumentFragment();
 					$fragment->appendXML($inner_html);
 					$figcaption->appendChild($fragment);
