@@ -81,8 +81,7 @@ function find_and_group_illustrations(&$dom, &$images, $start_offset, $suroundin
 				// remove node and put it in container
 				$old_node = $image[$to_move]->parentNode->removeChild($image[$to_move]);
 				$container->appendChild($old_node);
-				$images[$index][$to_move] = $old_node->cloneNode(true);
-
+				
 				// wrap p.legendeillustration in a <figcaption> element
 				if ($to_move == 'legende') {
 					$figcaption = $dom->createElement('figcaption');
@@ -91,6 +90,10 @@ function find_and_group_illustrations(&$dom, &$images, $start_offset, $suroundin
 					$fragment->appendXML($inner_html);
 					$figcaption->appendChild($fragment);
 					$old_node->parentNode->replaceChild($figcaption, $old_node);
+					// Store clone in $images
+					$images[$index][$to_move] = $old_node->cloneNode(true);
+				} else {
+					$images[$index][$to_move] = $container->appendChild($old_node);
 				}
 			}
 		}
