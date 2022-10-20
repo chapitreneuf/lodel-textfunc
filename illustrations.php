@@ -76,7 +76,8 @@ function find_and_group_illustrations(&$dom, &$images, $start_offset, $suroundin
 			if (isset($image[$to_move])) {
 				// use 'titre' as alt text if exists, otherwise use 'legende'
 				if ($alt_text === '' and ($to_move === 'titre' or $to_move === 'legende')) {
-					$alt_text = $image[$to_move]->textContent;
+					$text_content = $image[$to_move]->textContent;
+					$alt_text = htmlspecialchars($text_content, ENT_XML1 | ENT_QUOTES, 'UTF-8');
 				}
 				// remove node and put it in container
 				$old_node = $image[$to_move]->parentNode->removeChild($image[$to_move]);
