@@ -68,14 +68,39 @@ function find_and_group_illustrations(&$dom, &$images, $start_offset, $suroundin
 	// create container and put illustrations elements in in
 	for ($index=$start_offset; $index<$nb_img; $index++) {
 		$image = &$images[$index];
-		$container = create_element($dom, 'div', [['id','illustration-'.($index+1)], ['class','groupe-illustration groupe-illustration-'.$surounding_class]]);
+		$container = create_element($dom, 'figure', [['id','illustration-'.($index+1)], ['class','groupe-illustration groupe-illustration-'.$surounding_class]]);
 		// put container just before img tag
 		$container = $image['image']->parentNode->insertBefore($container, $image['image']);
+		$alt_text = '';
 		foreach(['titre', 'image', 'legende', 'credit'] as $to_move) {
 			if (isset($image[$to_move])) {
+				// use 'titre' as alt text if exists, otherwise use 'legende'
+				if ($alt_text === '' and ($to_move === 'titre' or $to_move === 'legende')) {
+					$text_content = $image[$to_move]->textContent;
+					$alt_text = htmlspecialchars($text_content, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+				}
 				// remove node and put it in container
 				$old_node = $image[$to_move]->parentNode->removeChild($image[$to_move]);
-				$images[$index][$to_move] = $container->appendChild($old_node);
+				$container->appendChild($old_node);
+				
+				// wrap p.legendeillustration in a <figcaption> element
+				if ($to_move == 'legende') {
+					$figcaption = $dom->createElement('figcaption');
+					$inner_html = $old_node->ownerDocument->saveXML($old_node);
+					$fragment = $figcaption->ownerDocument->createDocumentFragment();
+					$fragment->appendXML($inner_html);
+					$figcaption->appendChild($fragment);
+					$old_node->parentNode->replaceChild($figcaption, $old_node);
+				}
+				
+				$images[$index][$to_move] = $old_node;
+			}
+		}
+		// set alt text
+		if (isset($image['image']) and $alt_text !== '') {
+			$img_elements = $image['image']->getElementsByTagName('img');
+			foreach ($img_elements as $img) {
+				$img->setAttribute('alt', $alt_text);
 			}
 		}
 	}

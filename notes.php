@@ -117,3 +117,60 @@ function add_ellipsis($note, $ellipsis, $href) {
 	$a = create_element($note->ownerDocument, 'a', [['href', $href], ['class', 'ellipsis']], $ellipsis);
 	$note->appendChild($a);
 }
+
+/** filtres arianotecalls et arianotes pour Lodel (à utiliser ensemble)
+
+ arianotecalls
+ Ajoute un attribut aria-labelledby aux appels de notes d'un texte.
+ Utilisation : [#TEXTE|arianotecalls]
+
+ arianotes
+ Dans les notes, déplace l'id de la note sur l'élément <p> parent et ajoute un attribut aria-label aux appels de notes. L'argument ajoute à la fin de la note un lien de retour vers le texte si true.
+ Utilisation : [#NOTESBASPAGE|arianotes(true)]
+
+*/
+
+function arianotecalls($text) {
+	$dom = text_to_dom($text);
+
+	$notecalls = xpath_find($dom, '//a[@class=\'footnotecall\' or @class=\'endnotecall\']');
+	foreach ($notecalls as $notecall) {
+		$href = $notecall->attributes->getNamedItem('href')->nodeValue;
+		$note_id = str_replace('#', '', $href);
+		$notecall->setAttribute('aria-labelledby', $note_id);
+	}
+
+	return dom_to_text($dom);
+}
+
+function arianotes($html, $add_return_link = false) {
+	if (!$html) {
+		return '';
+	}
+	$dom = text_to_dom($html);
+
+	// Get body and loop on children, they are the notes (merci Arnaud ^^)
+	$body = $dom->getElementsByTagName('body')[0];
+	foreach ($body->childNodes as $note) {
+		// move id on parent element
+		$a = xpath_find($note->ownerDocument, './/a[@class=\'FootnoteSymbol\']', $note)[0];
+		$id = $a->attributes->getNamedItem('id')->nodeValue;
+		$note->setAttribute('id', $id);
+		$a->removeAttribute('id');
+
+		// add aria-label on .FootnoteSymbol
+		$index = preg_replace('/[^0-9]/', '', $id);
+		$label = getlodeltextcontents("note_numero", "site") . ' ' . $index;
+		$a->setAttribute('aria-label', $label);
+
+		if ($add_return_link) {
+			// add "return to text" link
+			$href = $a->attributes->getNamedItem('href')->nodeValue;
+			$return_link = $dom->createDocumentFragment();
+			$return_link->appendXML(' <a href="' . $href . '" class="note-return-link">' . getlodeltextcontents("note_retour", "site") . '</a>');
+			$note->appendChild($return_link);
+		}
+	}
+
+	return dom_to_text($dom);
+}

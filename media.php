@@ -27,7 +27,7 @@ function media($text) {
 
 		// Le media n'est pas trouvé dans la base
 		if (empty($row)) {
-			$warning = '<div style="background-color:red;">'.getlodeltextcontents("A media was expected","site").' : '.$media_reference.'</div>';
+			$warning = '<div style="background-color:red;">'.getlodeltextcontents("media_expected","site").' : '.$media_reference.'</div>';
 			$text = str_replace($media_reference, $warning, $text);
 			continue;
 		}
@@ -60,7 +60,7 @@ function media($text) {
 		}
 
 		// créer le HTML selon le type
-		$html = '<div id ="media-'.$identifier.'" class="doc-media doc-media-type-'.$media_type.'">';
+		$html = '<figure id="media-'.$identifier.'" class="doc-media doc-media-type-'.$media_type.'">';
 		if(!empty($info['titre'])){
 			$html .= '<p class="media-titre">'.$info['titre'].'</p>';
 		}
@@ -68,14 +68,14 @@ function media($text) {
 		if(!empty($info['description']))
 			$html .= '<div class="media-description">'.$info['description'].'</div>';
 		if(!empty($info['legende']))
-			$html .= '<div class="media-legende">'.$info['legende'].'</div>';
+			$html .= '<figcaption class="media-legende">'.$info['legende'].'</figcaption>';
 		if(!empty($info['credits'])){
 			$html .= '<p class="media-credits">'.getlodeltextcontents("Credits","site").': '.$info['credits'].'</p>';
 		}
 		if(!empty($info['urlaccesmedia'])){
 			$html .= '<p class="media-urlaccesmedia">'.getlodeltextcontents("Permalien","site").': <a href="'.$info['urlaccesmedia'].'">'.$info['urlaccesmedia'].'</a></p>';
 		}
-		$html .='</div>';
+		$html .='</figure>';
 		$text = str_replace($media_reference, $html, $text);
 
 	}
