@@ -154,6 +154,9 @@ function arianotes($html, $add_return_link = false) {
 	foreach ($body->childNodes as $note) {
 		// move id on parent element
 		$a = xpath_find($note->ownerDocument, './/a[@class=\'FootnoteSymbol\']', $note)[0];
+		if (!$a) {
+			continue;
+		}
 		$id = $a->attributes->getNamedItem('id')->nodeValue;
 		$note->setAttribute('id', $id);
 		$a->removeAttribute('id');
