@@ -28,7 +28,7 @@ function illustrations($html, $width=400, $surounding_class="texte") {
 	export_illustrations_to_lodel($dom, $images, $start_offset, $surounding_class);
 	C::set('images', $images);
 
-// 	var_export($images);
+	// var_export($images);
 	return dom_to_text($dom);
 }
 
@@ -55,10 +55,14 @@ function find_and_group_illustrations(&$dom, &$images, $start_offset, $suroundin
 	foreach ($images_nodes as $image) {
 		$images[$nb_img]['image'] = $image;
 		$image->attributes->getNamedItem('class')->nodeValue = 'imageillustration';
-		foreach ([['previous','titre'], ['next','legende'], ['next','credit']] as $search) {
-			list($direction, $class_name) = $search;
-			$found = find_Sibling($direction, $image, 'p', $class_name.'illustration', $surounding_class);
+		foreach ([['previous','titreillustration'], ['next','legendeillustration'], ['next','creditillustration'], ['next','figdesc']] as $search) {
+			list($direction, $style_name) = $search;
+			$found = find_Sibling($direction, $image, 'p', $style_name, $surounding_class);
 			if ($found) {
+				$class_name = preg_replace('/illustration$/', '', $style_name); // titreillustration => titre
+				if ($style_name == 'figdesc') {
+					$class_name = 'alt';
+				}
 				$images[$nb_img][$class_name] = $found;
 			}
 		}
@@ -72,6 +76,14 @@ function find_and_group_illustrations(&$dom, &$images, $start_offset, $suroundin
 		// put container just before img tag
 		$container = $image['image']->parentNode->insertBefore($container, $image['image']);
 		$alt_text = '';
+
+		// use figdesc element as alt text
+		if (isset($image['alt'])) {
+			$text_content = $image['alt']->textContent;
+			$alt_text = htmlspecialchars($text_content, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+			$image['alt']->parentNode->removeChild($image['alt']);
+		}
+
 		foreach(['titre', 'image', 'legende', 'credit'] as $to_move) {
 			if (isset($image[$to_move])) {
 				// use 'titre' as alt text if exists, otherwise use 'legende'
@@ -104,7 +116,6 @@ function find_and_group_illustrations(&$dom, &$images, $start_offset, $suroundin
 			}
 		}
 	}
-
 }
 
 // do thumbnail of illustrations
@@ -113,17 +124,17 @@ function illustration_thumbnails(&$dom, &$images, $start_offset, $width) {
 	for ($index=$start_offset; $index<$nb_img; $index++) {
 		$image = &$images[$index];
 
-        // find the IMG tag
-        // It should be firstChild, unless document is not well formed
-        // so use getElementsByTagName to be sure
+		// find the IMG tag
+		// It should be firstChild, unless document is not well formed
+		// so use getElementsByTagName to be sure
 		$img = $image['image']->getElementsByTagName('img');
 		if (!$img || !$img->length) continue;
 		$img = $img[0];
 
 		$src = $img->attributes->getNamedItem('src')->nodeValue;
-// 		$thumb_src = $src.'.thumb'; // uncomment next line in lodel
+		// $thumb_src = $src.'.thumb'; // uncomment next line in lodel
 		$thumb_src = vignette($src, $width);
-// 		error_log('Image convertie : ' . $thumb_src);
+		// error_log('Image convertie : ' . $thumb_src);
 		$image['src'] = $src;
 		$image['thumb_src'] = $thumb_src;
 		$img->attributes->getNamedItem('src')->nodeValue = $thumb_src;
