@@ -12,6 +12,10 @@ Install lodel-textfunc/ folder in the same folder of the main lodel installation
 
 Add `include_once('../lodel-textfunc/textfunc_local.php');` in your `lodelconfig.php`
 
+## Documentation
+
+See [Nova documentation](https://github.com/chapitreneuf/nova).
+
 ## Credit
 
 [Chapitre neuf](https://chapitre9.org)
